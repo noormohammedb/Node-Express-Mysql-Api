@@ -16,7 +16,12 @@ dbConnection.connect((error)=>{
 
 /* GET data */
 router.get('/', function (req, res, next) {
-    res.render('index', { title: 'Express' });
+  var dbQuery = 'SELECT * FROM login';
+  dbConnection.query(dbQuery, function (error, results, fields) {
+    if (error) throw error;
+    console.log('The solution is: ', results[0]);
+    res.send(results);
+    // res.render('index', { title: 'Express' });
   });
 });
 
