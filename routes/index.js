@@ -24,5 +24,19 @@ router.get('/', function (req, res, next) {
     // res.render('index', { title: 'Express' });
   });
 });
+/* POST data*/
+router.post('/',(req,res,next)=>{
+  
+  var dbQuery = 'INSERT INTO login(username,email,password) VALUES(?,?,?)';
+  console.log(req.body);
+  let {username, email, password} = req.body;
+  console.log(username, email, password);
+  dbConnection.query(dbQuery,[username, email, password],(error, resuls, fields)=> {
+    if(error) throw error
+    console.log("inserting sucess");
+    // console.log(resuls);
+  });
+  res.send("i am developing");
+});
 
 module.exports = router;
