@@ -1,6 +1,8 @@
 var express = require('express');
+const bodyParser = require('body-parser');
 var router = express.Router();
 const mysql = require('mysql');
+const { json } = require('body-parser');
 const dbCredentials = {
   host: 'localhost',
   user: 'root',
@@ -13,6 +15,8 @@ dbConnection.connect((error)=>{
     console.log('db connection sucess');
 });
 
+let jsonparser = bodyParser.json();
+let urlparser = bodyParser.urlencoded({extended:false});
 
 /* GET data */
 router.get('/', function (req, res, next) {
@@ -24,9 +28,9 @@ router.get('/', function (req, res, next) {
     // res.render('index', { title: 'Express' });
   });
 });
+
 /* POST data*/
-router.post('/',(req,res,next)=>{
-  
+router.post('/',jsonparser,urlparser,(req,res,next)=>{
   var dbQuery = 'INSERT INTO login(username,email,password) VALUES(?,?,?)';
   console.log(req.body);
   let {username, email, password} = req.body;
@@ -35,8 +39,21 @@ router.post('/',(req,res,next)=>{
     if(error) throw error
     console.log("inserting sucess");
     // console.log(resuls);
+    res.send("i am developing");
   });
-  res.send("i am developing");
+});
+
+/* PATCH data */
+router.patch('/',(req,res,next)=>{
+  var dbQuery = 'UPDATE login SET username = ?, password = ? WHERE email = ?';
+  console.log(req.body);
+  let {username, email, password} = req.body;
+  dbConnection.query(dbQuery,[username, password, email],(error, results, fields)=>{
+    if(error) throw error;
+    console.log('updation sucess');
+    console.log(results);
+    res.send('updation sucess');
+  });
 });
 
 module.exports = router;
