@@ -56,4 +56,18 @@ router.patch('/',(req,res,next)=>{
   });
 });
 
+/* DELETE data */
+router.delete('/',(req, res, next)=>{
+  console.log(req.body);
+  var dbQuery = 'DELETE FROM login WHERE email = ?';
+  let { id, email } = req.body;
+  dbConnection.query(dbQuery,[email],(error, resuls, fields)=>{
+    if(error) throw error;
+    console.log('deleting sucess');
+    console.log(resuls);
+    console.log(fields);
+    res.send('delete sucess');
+  });
+});
+
 module.exports = router;
