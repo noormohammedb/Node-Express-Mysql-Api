@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 var router = express.Router();
 const mysql = require('mysql');
 const { json } = require('body-parser');
+const jwt = require('jsonwebtoken');
 const dbCredentials = {
   host: 'localhost',
   user: 'root',
@@ -18,8 +19,56 @@ dbConnection.connect((error)=>{
 let jsonparser = bodyParser.json();
 let urlparser = bodyParser.urlencoded({extended:false});
 
+function varifyToken(req,res,next){
+  console.log(req.headers.authorization);
+  let tokenhead = req.headers.authorization;
+  if(tokenhead)
+  {
+    console.log('token true');
+    let token =tokenhead.split(' ').pop();
+    console.log(token);
+    jwt.verify(token,'hello',(error,decode)=>{
+      if(error){ 
+        console.log('token varification failed');
+        res.status(403).send('auth failed');
+      }
+      else{
+        console.log('token decoded : ',decode);
+        // res.send(decode)
+        next();
+      }
+    });
+  }
+  else
+  res.send(401).send('unauthorized access');
+}
+
+/* LOGIN For AUTH */
+router.post('/login',(req, res, next)=>{
+  console.log(req.body);
+  let {email, password} = req.body;
+  console.log(email, password);
+  let dbQuery = 'SELECT username FROM login WHERE email = ? AND password = ?';
+  dbConnection.query(dbQuery,[email, password],(error,results,fields)=>{
+    if(error) throw error;
+    else if(results[0]==undefined){
+      console.log(results, fields);
+      console.log('empty');
+      res.send("AUTHENDICATION FAILED");
+    }
+    else{
+      console.log('sucess');
+      console.log(results[0]);
+      jwt.sign({user: results[0].username},'hello',{expiresIn: '1h'},(error,token)=>{
+        res.status(200).send({results,token});
+        console.log(token);
+      });
+    }
+  });
+});
+
 /* GET data */
-router.get('/', function (req, res, next) {
+router.get('/', varifyToken, function (req, res, next) {
   var dbQuery = 'SELECT * FROM login';
   dbConnection.query(dbQuery, function (error, results, fields) {
     if (error) throw error;
