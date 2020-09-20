@@ -43,6 +43,10 @@ function varifyToken(req,res,next){
   res.status(401).send('unauthorized access');
 }
 
+router.get('/login',(req,res,next)=>{
+    res.render('user', { title: 'login' });
+})
+
 /* LOGIN For AUTH */
 router.post('/login',(req, res, next)=>{
   console.log(req.body);
@@ -78,8 +82,13 @@ router.get('/', varifyToken, function (req, res, next) {
   });
 });
 
+/* SIGNUP */
+router.get('/signup',(req,res,next)=>{
+  res.render('user', { title: 'login', signup: true });
+})
+
 /* POST data*/
-router.post('/',jsonparser,urlparser,(req,res,next)=>{
+router.post('/',(req,res,next)=>{
   var dbQuery = 'INSERT INTO login(username,email,password) VALUES(?,?,?)';
   console.log(req.body);
   let {username, email, password} = req.body;
