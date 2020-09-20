@@ -88,7 +88,7 @@ router.get('/signup',(req,res,next)=>{
 })
 
 /* POST data*/
-router.post('/',(req,res,next)=>{
+router.post('/',jsonparser,urlparser,(req,res,next)=>{
   var dbQuery = 'INSERT INTO login(username,email,password) VALUES(?,?,?)';
   console.log(req.body);
   let {username, email, password} = req.body;
